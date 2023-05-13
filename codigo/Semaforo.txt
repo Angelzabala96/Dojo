@@ -1,0 +1,194 @@
+/* 
+---------------CONSIGNA DOJO------------------------
+El gobierno de la ciudad quiere actualizar los semáforos que tiene instalados. La empresa  “UTNFRA Robotics” ganó la licitación y ahora les toca a los desarrolladores de la empresa generar  un proyecto low cost que cumpla con las especificaciones que el gobierno de la ciudad nos  impone, a saber las especificaciones son las siguientes.
+ 
+1- El semáforo tiene que tener 2 leds de cada color como mínimo, en caso de que uno se  rompa. 
+2- Tiene que implementar los tiempos correctos como se detallan a continuación. 3- El verde dura 5 segundos. 
+4- El amarillo dura 3 segundos. 
+5- Rojo dura 5 segundos. 
+6- Tiene que tener señalización para personas no videntes como se detalla a  continuación. (Buzzer o piezo)
+7- Durante el rojo: Tiene que sonar 2 vez por segundo en un tono FUERTE. 
+8-  Durante el amarillo: Tiene que sonar 1 vez por segundo en un tono SUAVE. 
+9- Al cambiar de verde a amarillo debe titilar 3 veces el verde antes de pasar al amarillo
+10- Al cambiar de amarillo a rojo se debe titilar 3 veces el amarillo
+11- Al cambiar de rojo a Amarillo se debe titilar 3 veces el rojo
+12- Al cambiar de amarillo a verde se debe titilar 3 veces el amarillo.
+13-  Agregar un botón (pull down) que al presionarlo se active la funcionalidad de luz verde con más tiempo, dándole a la persona que lo necesite más tiempo para cruzar la calle , sirve para la próxima luz verde y solo para la próxima luz verde después de presionar el botón. el tiempo se duplicará. 
+14-  Colocar dos semáforos de calles que se crucen  y programarlos para que funcionen en conjunto.
+
+----------------------------------------------------
+
+*/
+
+#define VERDE 2
+#define VERDEDOS 4
+#define AMARILLO 7
+#define AMARILLODOS 8
+#define ROJO 12
+#define ROJODOS 13
+#define piezoRojo 11
+#define piezoAmarillo 10
+
+
+void encender(int pin,int pinDos,int tiempo);
+void apagar(int pin,int pinDos);
+void senializacion(int pin, int tiempo);
+void sonarMedio(int pin_sonar, int tiempo);
+void sonarSegundo(int pin_sonar, int tiempo);
+void encenderApagar(int pin, int pinDos,int tiempo);
+void titilarSonar(int pin, int pinDos, int pinTres, int tiempo, int tiempoDos);
+void titilar(int pin, int pinDos, int tiempo);
+
+
+int pulsador;
+void setup()
+{
+  pinMode(VERDE, OUTPUT);
+  pinMode(VERDEDOS, OUTPUT);
+  pinMode(AMARILLO, OUTPUT);
+  pinMode(AMARILLODOS, OUTPUT);
+  pinMode(ROJO, OUTPUT);
+  pinMode(ROJODOS, OUTPUT);
+  pinMode(piezoRojo, OUTPUT);
+  pinMode(piezoAmarillo, OUTPUT);
+  pinMode(3, INPUT);
+  Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(3),intercontador,RISING);
+}
+
+void loop()
+{
+ 
+  encender(AMARILLO, AMARILLODOS, 0);
+  Serial.print("Luces amarillas encendidas");
+  Serial.println(" y luces amarillas secundarias encendidas");
+  Serial.println("Piezo amarillo encendido");
+  sonarSegundo(piezoAmarillo, 500);
+  apagar(AMARILLO, AMARILLODOS);
+  
+ 
+  encender(ROJO, ROJODOS, 0);
+  Serial.print("Luces rojas encendidas");
+  Serial.print(", luz roja vertical encendida");
+  Serial.println(" y luz verde horizontal encendida");
+  Serial.println("Piezo rojo encendido");
+  titilarSonar(AMARILLO, AMARILLODOS, piezoRojo, 250, 0);
+  sonarMedio(piezoRojo, 250);
+  apagar(ROJO, ROJODOS);
+  
+  
+  
+  
+  
+  encender(AMARILLO, AMARILLODOS, 0);
+  Serial.print("Luces amarillas encendidas");
+  Serial.println(" y luces amarillas secundarias encendidas");
+  Serial.println("Piezo amarillo encendido");
+  titilarSonar(ROJO, ROJODOS, piezoAmarillo, 250, 500);
+  apagar(AMARILLO, AMARILLODOS);
+ 
+  
+  
+  if(pulsador == HIGH)
+  {
+  
+   encender(VERDE, VERDEDOS, 0);
+  Serial.println("Doble duracion de luces verdes");
+  Serial.print("Luces verde encendidas");
+  Serial.print(", luz verde vertical encendida");
+  Serial.println(" y luz roja horizontal encendida");
+  titilar(AMARILLO, AMARILLODOS, 250);
+  encenderApagar(VERDE, VERDEDOS, 7000);
+  titilar(VERDE, VERDEDOS, 250);
+   pulsador = 0;
+  }
+  else
+  {
+  Serial.print("Luces verde encendidas");
+  Serial.print(", luz verde vertical encendida");
+  Serial.println(" y luz roja horizontal encendida");
+  encender(VERDE, VERDEDOS, 0);
+  titilar(AMARILLO, AMARILLODOS, 250);
+  encenderApagar(VERDE, VERDEDOS, 2000);
+  titilar(VERDE, VERDEDOS, 250);
+  }
+}
+
+void intercontador()
+{
+  
+   pulsador = digitalRead(3);
+  if(pulsador == HIGH)
+  {
+    Serial.println("interruptor pulsado");
+    pulsador = 1;
+  }
+}
+
+void encender(int pin,int pinDos,int tiempo)
+{
+  digitalWrite(pin, HIGH);
+  digitalWrite(pinDos, HIGH);
+  delay(tiempo);
+}
+void apagar(int pin,int pinDos)
+{
+  digitalWrite(pin, LOW);
+  digitalWrite(pinDos, LOW);
+}
+void senializacion(int pin, int tiempo)
+{
+  digitalWrite(pin, HIGH);
+  delay(tiempo);
+  digitalWrite(pin, LOW);
+  delay(tiempo);
+}
+void sonarMedio(int pin_sonar, int tiempo)
+{
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+}
+void sonarSegundo(int pin_sonar, int tiempo)
+{
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+  senializacion(pin_sonar, tiempo);
+}
+
+void encenderApagar(int pin, int pinDos,int tiempo)
+{
+  encender(pin, pinDos, tiempo);
+  apagar(pin, pinDos);
+}
+void titilarSonar(int pin, int pinDos, int pinTres, int tiempo, int tiempoDos)
+{
+  digitalWrite(pinTres, HIGH);
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempoDos);
+  digitalWrite(pinTres, LOW);
+  delay(tiempo);
+  digitalWrite(pinTres, HIGH);
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempoDos);
+  digitalWrite(pinTres, LOW);
+  delay(tiempo);
+  digitalWrite(pinTres, HIGH);
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempoDos);
+  digitalWrite(pinTres, LOW);
+  delay(tiempo);
+}
+void titilar(int pin, int pinDos, int tiempo)
+{
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempo);
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempo);
+  encenderApagar(pin, pinDos, tiempo);
+  delay(tiempo);
+}
