@@ -1,12 +1,12 @@
 # Dojo1
 ![Tinkercad](./img/ArduinoTinkercad.jpg)
 
-## intgrantes
+## integrantes
 - Angel Zabala
 
 ## Proyecto: Semaforo
 Un semaforo para el gobierno de la ciudad
-
+![Tinkercad](./img/semaforoArduino.png)
 ## Funcion principal
 Esta funcion se encarga de encender y apagar los leds
 
@@ -22,4 +22,3 @@ void encenderApagar(int pin, int pinDos,int tiempo)
 
 # 🤖 Link al proyecto
 - [proyecto] (https://www.tinkercad.com/things/0RNIql7IfcW)
-- 
