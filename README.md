@@ -1,7 +1,7 @@
 # Dojo1
 ![Tinkercad](./img/ArduinoTinkercad.jpg)
 
-## intgrantes
+## integrantes
 - Angel Zabala
 
 ## Proyecto: Semaforo
